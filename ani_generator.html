@@ -1,0 +1,372 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css"> 
+    <title>ANI Generator</title>
+    
+</head>
+<body>
+    <div class="header">
+        <img src="technexa_logo.png" alt="Tech Nexa Logo" class="logo" onclick="goHome()" style="cursor: pointer;">
+    </div>
+    <div class="container">
+        <h2>ANI Generator</h2>
+        <div class="form-group">
+            <label><input type="checkbox" id="plus1"> With (+)</label>
+        </div>
+        <div class="form-group">
+            <label>ANI Type:</label>
+            <select id="aniType">
+                <option value="short">Short ANI</option>
+                <option value="long">Long ANI</option>
+            </select>
+        </div>
+       
+        <div class="form-group">
+            <label>Country:</label>
+            <select id="country" onchange="updateFromCountry()"></select>
+        </div>
+
+        <div class="form-group">
+            <label>Prefix:</label>
+            <input type="number" id="digit" oninput="updateFromPrefix()">
+        </div>
+
+        <div class="form-group">
+            <label>Length:</label>
+            <input type="number" id="length">
+        </div>
+
+        <button onclick="generateANI()">Generate</button>
+
+        <div id="output"></div>
+    </div>
+
+    <script>
+   const countryData = {
+    "Afghanistan": { code: 93, length: 9 },
+    "Albania": { code: 355, length: 9 },
+    "Algeria": { code: 213, length: 9 },
+    "American Samoa": { code: 1, length: 7 },
+    "Andorra": { code: 376, length: 9 },
+    "Angola": { code: 244, length: 9 },
+    "Anguilla": { code: 1, length: 7 },
+    "Antigua and Barbuda": { code: 1, length: 7 },
+    "Argentina": { code: 54, length: 10 },
+    "Armenia": { code: 374, length: 8 },
+    "Aruba": { code: 297, length: 7 },
+    "Australia": { code: 61, length: 15 },
+    "Australian External Territories": { code: 672, length: 6 },
+    "Austria": { code: 43, length: 13 },
+    "Azerbaijan": { code: 994, length: 9 },
+    "Bahamas": { code: 1, length: 7 },
+    "Bahrain": { code: 973, length: 8 },
+    "Bangladesh": { code: 8801, length: 9 },
+    "Barbados": { code: 1, length: 7 },
+    "Belarus": { code: 375, length: 10 },
+    "Belgium": { code: 32, length: 9 },
+    "Belize": { code: 501, length: 7 },
+    "Benin": { code: 229, length: 8 },
+    "Bermuda": { code: 1, length: 7 },
+    "Bhutan": { code: 975, length: 8 },
+    "Bolivia (Plurinational State of)": { code: 591, length: 8 },
+    "Bonaire, Sint Eustatius and Saba": { code: 599, length: 7 },
+    "Bosnia and Herzegovina": { code: 387, length: 8 },
+    "Botswana": { code: 267, length: 8 },
+    "Brazil": { code: 55, length: 10 },
+    "British Virgin Islands": { code: 1, length: 7 },
+    "Brunei Darussalam": { code: 673, length: 7 },
+    "Bulgaria": { code: 359, length: 9 },
+    "Burkina Faso": { code: 226, length: 8 },
+    "Burundi": { code: 257, length: 8 },
+    "Cambodia": { code: 855, length: 8 },
+    "Cameroon": { code: 237, length: 8 },
+    "Canada": { code: 1, length: 10 },
+    "Cape Verde": { code: 238, length: 7 },
+    "Cayman Islands": { code: 1, length: 7 },
+    "Central African Rep.": { code: 236, length: 8 },
+    "Chad": { code: 235, length: 8 },
+    "Chile": { code: 56, length: 9 },
+    "China": { code: 86, length: 12 },
+    "Colombia": { code: 57, length: 10 },
+    "Comoros": { code: 269, length: 7 },
+    "Congo": { code: 242, length: 9 },
+    "Cook Islands": { code: 682, length: 5 },
+    "Costa Rica": { code: 506, length: 8 },
+    "Côte d'Ivoire": { code: 225, length: 8 },
+    "Croatia": { code: 385, length: 12 },
+    "Cuba": { code: 53, length: 8 },
+    "Curaçao": { code: 599, length: 8 },
+    "Cyprus": { code: 357, length: 11 },
+    "Czech Rep.": { code: 420, length: 12 },
+    "Dem. People's Rep. of Korea": { code: 850, length: 17 },
+    "Dem. Rep. of the Congo": { code: 243, length: 9 },
+    "Denmark": { code: 45, length: 8 },
+    "Diego Garcia": { code: 246, length: 7 },
+    "Djibouti": { code: 253, length: 6 },
+    "Dominica": { code: 1, length: 7 },
+    "Dominican Rep.": { code: 1, length: 7 },
+    "Ecuador": { code: 593, length: 8 },
+    "Egypt": { code: 20, length: 9 },
+    "El Salvador": { code: 503, length: 11 },
+    "Equatorial Guinea": { code: 240, length: 9 },
+    "Eritrea": { code: 291, length: 7 },
+    "Estonia": { code: 372, length: 10 },
+    "Ethiopia": { code: 251, length: 9 },
+    "Falkland Islands (Malvinas)": { code: 500, length: 5 },
+    "Faroe Islands": { code: 298, length: 6 },
+    "Fiji": { code: 679, length: 7 },
+    "Finland": { code: 358, length: 12 },
+    "France": { code: 33, length: 9 },
+    "French Dep. and Territories in the Indian Ocean": { code: 262, length: 9 },
+    "French Guiana": { code: 594, length: 9 },
+    "French Polynesia": { code: 689, length: 6 },
+    "Gabon": { code: 241, length: 7 },
+    "Gambia": { code: 220, length: 7 },
+    "Georgia": { code: 995, length: 9 },
+    "Germany": { code: 49, length: 13 },
+    "Ghana": { code: 233, length: 9 },
+    "Gibraltar": { code: 350, length: 8 },
+    "Greece": { code: 30, length: 10 },
+    "Greenland": { code: 299, length: 6 },
+    "Grenada": { code: 1, length: 7 },
+    "Guadeloupe": { code: 590, length: 9 },
+    "Guam": { code: 1, length: 7 },
+    "Guatemala": { code: 502, length: 8 },
+    "Guinea": { code: 224, length: 8 },
+    "Guinea-Bissau": { code: 245, length: 7 },
+    "Guyana": { code: 592, length: 7 },
+    "Haiti": { code: 509, length: 8 },
+    "Honduras": { code: 504, length: 8 },
+    "Hong Kong, China": { code: 852, length: 9 },
+    "Hungary": { code: 36, length: 9 },
+    "Iceland": { code: 354, length: 9 },
+    "India": { code: 91, length: 10 },
+    "Indonesia": { code: 62, length: 10 },
+    "Inmarsat SNAC": { code: 870, length: 9 },
+    "International Freephone Service": { code: 800, length: 8 },
+    "International Networks, shared code 882": { code: 882, length: 9 },
+    "International Networks, shared code 883": { code: 883, length: 9 },
+    "International Premium Rate Service (IPRS)": { code: 979, length: 9 },
+    "International Shared Cost Service (ISCS)": { code: 808, length: 8 },
+    "Iran (Islamic Republic of)": { code: 98, length: 10 },
+    "Iraq": { code: 964, length: 10 },
+    "Ireland": { code: 353, length: 11 },
+    "Israel": { code: 972, length: 9 },
+    "Italy": { code: 39, length: 11 },
+    "Jamaica": { code: 1, length: 7 },
+    "Japan": { code: 81, length: 13 },
+    "Jordan": { code: 962, length: 9 },
+    "Kazakhstan": { code: 7, length: 10 },
+    "Kenya": { code: 254, length: 10 },
+    "Kiribati": { code: 686, length: 5 },
+    "Korea (Rep. of)": { code: 82, length: 11 },
+    "Kuwait": { code: 965, length: 8 },
+    "Kyrgyzstan": { code: 996, length: 9 },
+    "Lao P.D.R.": { code: 856, length: 10 },
+    "Latvia": { code: 371, length: 8 },
+    "Lebanon": { code: 961, length: 8 },
+    "Lesotho": { code: 266, length: 8 },
+    "Liberia": { code: 231, length: 8 },
+    "Libya": { code: 218, length: 9 },
+    "Liechtenstein": { code: 423, length: 9 },
+    "Lithuania": { code: 370, length: 8 },
+    "Luxembourg": { code: 352, length: 11 },
+    "Macao, China": { code: 853, length: 8 },
+    "Madagascar": { code: 261, length: 10 },
+    "Malawi": { code: 265, length: 8 },
+    "Malaysia": { code: 60, length: 9 },
+    "Maldives": { code: 960, length: 7 },
+    "Mali": { code: 223, length: 8 },
+    "Malta": { code: 356, length: 8 },
+    "Marshall Islands": { code: 692, length: 7 },
+    "Martinique": { code: 596, length: 9 },
+    "Mauritania": { code: 222, length: 7 },
+    "Mauritius": { code: 230, length: 7 },
+    "Mexico": { code: 52, length: 10 },
+    "Micronesia": { code: 691, length: 7 },
+    "Moldova (Republic of)": { code: 373, length: 8 },
+    "Monaco": { code: 377, length: 9 },
+    "Mongolia": { code: 976, length: 8 },
+    "Montenegro": { code: 382, length: 12 },
+    "Montserrat": { code: 1, length: 7 },
+    "Morocco": { code: 212, length: 9 },
+    "Mozambique": { code: 258, length: 9 },
+    "Myanmar": { code: 95, length: 9 },
+    "Namibia": { code: 264, length: 10 },
+    "Nauru": { code: 674, length: 7 },
+    "Nepal": { code: 977, length: 9 },
+    "Netherlands": { code: 31, length: 9 },
+    "New Caledonia": { code: 687, length: 6 },
+    "New Zealand": { code: 64, length: 10 },
+    "Nicaragua": { code: 505, length: 8 },
+    "Niger": { code: 227, length: 8 },
+    "Nigeria": { code: 234, length: 10 },
+    "Niue": { code: 683, length: 4 },
+    "Northern Marianas": { code: 1, length: 7 },
+    "Norway": { code: 47, length: 8 },
+    "Oman": { code: 968, length: 8 },
+    "Pakistan": { code: 92, length: 11 },
+    "Palau": { code: 680, length: 7 },
+    "Panama": { code: 507, length: 8 },
+    "Papua New Guinea": { code: 675, length: 11 },
+    "Paraguay": { code: 595, length: 9 },
+    "Peru": { code: 51, length: 11 },
+    "Philippines": { code: 63, length: 10 },
+    "Poland": { code: 48, length: 9 },
+    "Portugal": { code: 351, length: 11 },
+    "Puerto Rico": { code: 1, length: 7 },
+    "Qatar": { code: 974, length: 8 },
+    "Romania": { code: 40, length: 9 },
+    "Russian Federation": { code: 7, length: 10 },
+    "Rwanda": { code: 250, length: 9 },
+    "Saint Helena, Ascension and Tristan da Cunha": { code: 247, length: 4 },
+    "Saint Kitts and Nevis": { code: 1, length: 7 },
+    "Saint Lucia": { code: 1, length: 7 },
+    "Saint Pierre and Miquelon": { code: 508, length: 6 },
+    "Saint Vincent and the Grenadines": { code: 1, length: 7 },
+    "Samoa": { code: 685, length: 7 },
+    "San Marino": { code: 378, length: 10 },
+    "Sao Tome and Principe": { code: 239, length: 7 },
+    "Saudi Arabia": { code: 966, length: 9 },
+    "Senegal": { code: 221, length: 9 },
+    "Serbia": { code: 381, length: 12 },
+    "Seychelles": { code: 248, length: 7 },
+    "Sierra Leone": { code: 232, length: 8 },
+    "Singapore": { code: 65, length: 12 },
+    "Sint Maarten (Dutch part)": { code: 1, length: 7 },
+    "Slovakia": { code: 421, length: 9 },
+    "Slovenia": { code: 386, length: 8 },
+    "Solomon Islands": { code: 677, length: 5 },
+    "Somalia": { code: 252, length: 9 },
+    "South Africa": { code: 27, length: 10 },
+    "South Sudan": { code: 211, length: 8 },
+    "Spain": { code: 34, length: 9 },
+    "Sri Lanka": { code: 94, length: 10 },
+    "Sudan": { code: 249, length: 9 },
+    "Suriname": { code: 597, length: 7 },
+    "Sweden": { code: 46, length: 9 },
+    "Switzerland": { code: 41, length: 12 },
+    "Syria": { code: 963, length: 9 },
+    "Taiwan": { code: 886, length: 10 },
+    "Tajikistan": { code: 992, length: 9 },
+    "Tanzania (United Republic of)": { code: 255, length: 10 },
+    "Thailand": { code: 66, length: 10 },
+    "Timor-Leste": { code: 670, length: 7 },
+    "Togo": { code: 228, length: 8 },
+    "Tokelau": { code: 690, length: 5 },
+    "Tonga": { code: 676, length: 7 },
+    "Trinidad and Tobago": { code: 1, length: 7 },
+    "Tunisia": { code: 216, length: 8 },
+    "Turkey": { code: 90, length: 10 },
+    "Turkmenistan": { code: 993, length: 9 },
+    "Tuvalu": { code: 688, length: 5 },
+    "Uganda": { code: 256, length: 9 },
+    "Ukraine": { code: 380, length: 9 },
+    "United Arab Emirates": { code: 971, length: 9 },
+    "United Kingdom of Great Britain and Northern Ireland": { code: 44, length: 10 },
+    "United States of America": { code: 1, length: 10 },
+    "Uruguay": { code: 598, length: 9 },
+    "Uzbekistan": { code: 998, length: 9 },
+    "Vanuatu": { code: 678, length: 7 },
+    "Venezuela (Bolivarian Republic of)": { code: 58, length: 10 },
+    "Viet Nam": { code: 84, length: 10 },
+    "Western Sahara": { code: 212, length: 9 },
+    "Yemen": { code: 967, length: 9 },
+    "Zambia": { code: 260, length: 9 },
+    "Zimbabwe": { code: 263, length: 9 }
+};
+
+
+        function generateANI() {
+            let aniType = document.getElementById("aniType").value;
+            let digit = document.getElementById("digit").value;
+            let length = document.getElementById("length").value;
+            let withPlus = document.getElementById("plus1").checked;
+            let prefix = withPlus ? `+${digit}` : digit;
+            
+            if (!digit || !length) {
+                document.getElementById("output").innerHTML = "Please enter valid inputs.";
+                return;
+            }
+
+            let flength = length - 1;     
+            let outputHtml = '';
+            if (aniType === "short") {
+                for (let i = 0; i < 10; i++) {
+                    outputHtml += `<div class="output-container">
+                        <p>*:${prefix}${(9 - i)}${'?'.repeat(flength)}</p>
+                        <button class="copy-btn" onclick="copyText('*:${prefix}${(9 - i)}${'?'.repeat(flength)}')">📋</button>
+                    </div>`;
+                }
+            } else if (aniType === "long") {
+                let longANI = '';
+                for (let i = 0; i < 10; i++) {
+                    longANI += `${i}*:${prefix}${9 - i}${'?'.repeat(flength)}, `;
+                }
+                longANI = longANI.slice(0, -2);
+                outputHtml += `<div class="output-container">
+                    <p>${longANI}</p>
+                    <button class="copy-btn" onclick="copyText('${longANI}')">📋</button>
+                </div>`;
+            }
+            document.getElementById("output").innerHTML = outputHtml;
+        }
+
+        function copyText(aniValue) {
+            navigator.clipboard.writeText(aniValue).then(() => {
+                alert('Copied to clipboard!');
+            }).catch(err => {
+                alert('Failed to copy text: ' + err);
+            });
+        }
+     const countrySelect = document.getElementById('country');
+
+
+const defaultOption = document.createElement('option');
+defaultOption.value = '';
+defaultOption.textContent = 'Select country';
+defaultOption.disabled = true;
+defaultOption.selected = true;
+countrySelect.appendChild(defaultOption);
+
+
+Object.keys(countryData).forEach(country => {
+    const option = document.createElement('option');
+    option.value = country;
+    option.textContent = country;
+    countrySelect.appendChild(option);
+});
+
+      
+  
+        function updateFromCountry() {
+            const country = countrySelect.value;
+            if (countryData[country]) {
+                const { code, length } = countryData[country];
+                document.getElementById('digit').value = code;
+                document.getElementById('length').value = length;
+            }
+        }
+
+        function goHome() {
+        window.location.href = "index.html";
+    }
+
+        function updateFromPrefix() {
+            const prefix = document.getElementById('digit').value;
+            for (const [country, data] of Object.entries(countryData)) {
+                if (data.code.toString() === prefix) {
+                    document.getElementById('country').value = country;
+                    document.getElementById('length').value = data.length;
+                    return;
+                }
+            }
+        }
+
+ 
+    </script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Extractor</title>
+    <style>
+        /* General reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+
+        .logo {
+           width: 300px; 
+           height: auto;
+           margin-top: 10px;
+           margin-bottom: 10px;
+              }
+
+
+        
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+          
+        }
+
+        
+        select, button {
+            width: 100%;
+            padding: 8px; 
+            margin-top: 10px;
+            font-size: 14px; 
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #output {
+            margin-top: 20px;
+            font-weight: bold;
+            word-wrap: break-word;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        #copyBtn {
+            margin-top: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        #copyBtn:hover {
+            background-color: #0056b3;
+        }
+
+       
+
+        .form-group label {
+            margin-top: 10PX;
+        
+            margin-right: 0px;
+        }
+
+        #copyBtn {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="technexa_logo.png" alt="Tech Nexa Logo" class="logo" onclick="goHome()" style="cursor: pointer;">
+    </header>
+    <div class="container">
+        <h2>Data Extractor</h2>
+        <textarea id="inputText" placeholder="Paste your text here..."></textarea>
+        <div class="form-group">
+            <label for="extractType">Extract:</label>
+            <select id="extractType">
+                <option value="mobile">Mobile Numbers</option>
+                <option value="datetime">Date & Time</option>
+                <option value="sid">SID</option>
+            </select>
+            <label for="filterType">Filter:</label>
+            <select id="filterType">
+                <option value="all">All</option>
+                <option value="unique">Unique</option>
+            </select>
+        </div>
+        <button onclick="extractData()">Extract</button>
+        <div id="output"></div>
+        <button id="copyBtn" onclick="copyToClipboard()">Copy</button>
+    </div>
+
+    <script>
+        function extractData() {
+            let text = document.getElementById("inputText").value;
+            let extractType = document.getElementById("extractType").value;
+            let filterType = document.getElementById("filterType").value;
+            let pattern;
+
+            if (extractType === "mobile") {
+                pattern = /\b\d{8,}\b/g; 
+            } else if (extractType === "datetime") {
+                pattern = /\b\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\b/g; 
+            } else if (extractType === "sid") {
+           
+                pattern = /\b(Telegram|FACEBOOK|WhatsApp|TikTok|CTW|Skype|InfoSMS|MUA-786123)\b/g; // Match SID values
+            }
+
+            let matches = text.match(pattern) || [];
+            if (filterType === "unique") {
+                matches = [...new Set(matches)];
+            }
+
+            let outputText = matches.join("||") || "No matches found";
+            document.getElementById("output").innerText = outputText;
+            document.getElementById("copyBtn").style.display = matches.length > 0 ? "inline-block" : "none"; // Show copy button only if there are matches
+        }
+
+        function goHome() {
+        window.location.href = "index.html"; // Change this to the correct homepage filename
+    }
+
+        function copyToClipboard() {
+            let outputText = document.getElementById("output").innerText;
+            navigator.clipboard.writeText(outputText).then(() => {
+                alert("Copied to clipboard!");
+            }).catch(err => {
+                alert("Failed to copy: " + err);
+            });
+        }
+    </script>
+</body>
+</html>
