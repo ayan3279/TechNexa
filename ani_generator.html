@@ -1,11 +1,10 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css"> 
     <title>ANI Generator</title>
-    
 </head>
 <body>
     <div class="header">
@@ -23,30 +22,32 @@
                 <option value="long">Long ANI</option>
             </select>
         </div>
-       
+        <div class="form-group">
+            <label>Generation Type:</label>
+            <select id="generationType">
+                <option value="random">Generate Random ANI</option>
+                <option value="fixed">Generate Fixed ANI</option>
+            </select>
+        </div>
         <div class="form-group">
             <label>Country:</label>
             <select id="country" onchange="updateFromCountry()"></select>
         </div>
-
         <div class="form-group">
             <label>Prefix:</label>
             <input type="number" id="digit" oninput="updateFromPrefix()">
         </div>
-
         <div class="form-group">
             <label>Length:</label>
-            <input type="number" id="length">
+            <input type="number" id="length" readonly>
         </div>
-
         <button onclick="generateANI()">Generate</button>
-
         <div id="output"></div>
     </div>
 
     <script>
-   const countryData = {
-    "Afghanistan": { code: 93, length: 9 },
+        const countryData = {
+            "Afghanistan": { code: 93, length: 9 },
     "Albania": { code: 355, length: 9 },
     "Algeria": { code: 213, length: 9 },
     "American Samoa": { code: 1, length: 7 },
@@ -277,71 +278,24 @@
     "Yemen": { code: 967, length: 9 },
     "Zambia": { code: 260, length: 9 },
     "Zimbabwe": { code: 263, length: 9 }
-};
+        };
 
-
-        function generateANI() {
-            let aniType = document.getElementById("aniType").value;
-            let digit = document.getElementById("digit").value;
-            let length = document.getElementById("length").value;
-            let withPlus = document.getElementById("plus1").checked;
-            let prefix = withPlus ? `+${digit}` : digit;
-            
-            if (!digit || !length) {
-                document.getElementById("output").innerHTML = "Please enter valid inputs.";
-                return;
-            }
-
-            let flength = length - 1;     
-            let outputHtml = '';
-            if (aniType === "short") {
-                for (let i = 0; i < 10; i++) {
-                    outputHtml += `<div class="output-container">
-                        <p>*:${prefix}${(9 - i)}${'?'.repeat(flength)}</p>
-                        <button class="copy-btn" onclick="copyText('*:${prefix}${(9 - i)}${'?'.repeat(flength)}')">📋</button>
-                    </div>`;
-                }
-            } else if (aniType === "long") {
-                let longANI = '';
-                for (let i = 0; i < 10; i++) {
-                    longANI += `${i}*:${prefix}${9 - i}${'?'.repeat(flength)}, `;
-                }
-                longANI = longANI.slice(0, -2);
-                outputHtml += `<div class="output-container">
-                    <p>${longANI}</p>
-                    <button class="copy-btn" onclick="copyText('${longANI}')">📋</button>
-                </div>`;
-            }
-            document.getElementById("output").innerHTML = outputHtml;
-        }
-
-        function copyText(aniValue) {
-            navigator.clipboard.writeText(aniValue).then(() => {
-                alert('Copied to clipboard!');
-            }).catch(err => {
-                alert('Failed to copy text: ' + err);
-            });
-        }
-     const countrySelect = document.getElementById('country');
-
-
-const defaultOption = document.createElement('option');
-defaultOption.value = '';
-defaultOption.textContent = 'Select country';
-defaultOption.disabled = true;
-defaultOption.selected = true;
-countrySelect.appendChild(defaultOption);
-
-
-Object.keys(countryData).forEach(country => {
-    const option = document.createElement('option');
-    option.value = country;
-    option.textContent = country;
-    countrySelect.appendChild(option);
-});
-
-      
-  
+        const countrySelect = document.getElementById('country');
+        
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Select country';
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        countrySelect.appendChild(defaultOption);
+        
+        Object.keys(countryData).forEach(country => {
+            const option = document.createElement('option');
+            option.value = country;
+            option.textContent = country;
+            countrySelect.appendChild(option);
+        });
+        
         function updateFromCountry() {
             const country = countrySelect.value;
             if (countryData[country]) {
@@ -350,11 +304,7 @@ Object.keys(countryData).forEach(country => {
                 document.getElementById('length').value = length;
             }
         }
-
-        function goHome() {
-        window.location.href = "index.html";
-    }
-
+        
         function updateFromPrefix() {
             const prefix = document.getElementById('digit').value;
             for (const [country, data] of Object.entries(countryData)) {
@@ -366,7 +316,54 @@ Object.keys(countryData).forEach(country => {
             }
         }
 
- 
+        function generateANI() {
+            let aniType = document.getElementById("aniType").value;
+            let generationType = document.getElementById("generationType").value;
+            let digit = document.getElementById("digit").value;
+            let length = document.getElementById("length").value;
+            let withPlus = document.getElementById("plus1").checked;
+            let prefix = withPlus ? `+${digit}` : digit;
+            
+            if (!digit || !length) {
+                document.getElementById("output").innerHTML = "Please enter valid inputs.";
+                return;
+            }
+            
+            let flength = length - 1;
+            let outputHtml = '';
+
+            if (aniType === "short") {
+                for (let i = 0; i < 10; i++) {
+                    let ani = `*:${prefix}${(9 - i)}`;
+                    if (generationType === "random") {
+                        ani += '?'.repeat(flength);
+                    } else {
+                        ani += generateRandomNumbers(flength);
+                    }
+                    outputHtml += `<div class="output-container">
+                        <p>${ani}</p>
+                        <button class="copy-btn" onclick="copyText('${ani}')">📋</button>
+                    </div>`;
+                }
+            } 
+            document.getElementById("output").innerHTML = outputHtml;
+        }
+
+        function generateRandomNumbers(length) {
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += Math.floor(Math.random() * 10);
+            }
+            return result;
+        }
+
+        function copyText(aniValue) {
+            navigator.clipboard.writeText(aniValue).then(() => {
+                alert('Copied to clipboard!');
+            }).catch(err => {
+                alert('Failed to copy text: ' + err);
+            });
+        }
     </script>
 </body>
 </html>
