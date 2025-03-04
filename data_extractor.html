@@ -3,28 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css"> 
     <title>Data Extractor</title>
     <style>
-        /* General reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+
+.snowflake {
+    position: absolute;
+    top: -10px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: fall linear infinite;
+}
+@keyframes fall {
+    to {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
 
         /* Body styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f8f8;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-            padding: 20px;
-        }
-        
+       
 
         .logo {
            width: 300px; 
@@ -130,6 +130,11 @@
     </style>
 </head>
 <body>
+    <input type="checkbox" id="toggle" class="toggle--checkbox">
+    <label for="toggle" class="toggle--label">
+      <span class="toggle--label-background"></span>
+    </label>
+    <div class="background"></div>
     <header>
         <img src="technexa_logo.png" alt="Tech Nexa Logo" class="logo" onclick="goHome()" style="cursor: pointer;">
     </header>
@@ -155,6 +160,24 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            for (let i = 0; i < 100; i++) {
+                let snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.style.width = `${Math.random() * 5 + 2}px`;
+                snowflake.style.height = snowflake.style.width;
+                snowflake.style.left = `${Math.random() * 100}vw`;
+                snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+                document.body.appendChild(snowflake);
+            }
+        });
+
+        function toggleTheme() {
+            document.body.classList.toggle('light');
+            document.querySelector('.theme-toggle').classList.toggle('light');
+        }
+
         function extractData() {
             let text = document.getElementById("inputText").value;
             let extractType = document.getElementById("extractType").value;
