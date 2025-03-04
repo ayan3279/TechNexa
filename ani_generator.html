@@ -6,7 +6,32 @@
     <link rel="stylesheet" href="style.css"> 
     <title>ANI Generator</title>
 </head>
+
+<style>
+
+    .snowflake {
+        position: absolute;
+        top: -10px;
+        background: white;
+        border-radius: 50%;
+        opacity: 0.8;
+        animation: fall linear infinite;
+    }
+    @keyframes fall {
+        to {
+            transform: translateY(100vh);
+            opacity: 0;
+        }
+    }
+
+
+</style>
 <body>
+    <input type="checkbox" id="toggle" class="toggle--checkbox">
+    <label for="toggle" class="toggle--label">
+      <span class="toggle--label-background"></span>
+    </label>
+    <div class="background"></div>
     <div class="header">
         <img src="technexa_logo.png" alt="Tech Nexa Logo" class="logo" onclick="goHome()" style="cursor: pointer;">
     </div>
@@ -46,6 +71,25 @@
     </div>
 
     <script>
+
+document.addEventListener('DOMContentLoaded', function () {
+            for (let i = 0; i < 100; i++) {
+                let snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.style.width = `${Math.random() * 5 + 2}px`;
+                snowflake.style.height = snowflake.style.width;
+                snowflake.style.left = `${Math.random() * 100}vw`;
+                snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+                document.body.appendChild(snowflake);
+            }
+        });
+
+        function toggleTheme() {
+            document.body.classList.toggle('light');
+            document.querySelector('.theme-toggle').classList.toggle('light');
+        }
+
         const countryData = {
             "Afghanistan": { code: 93, length: 9 },
     "Albania": { code: 355, length: 9 },
@@ -281,7 +325,6 @@
         };
 
         const countrySelect = document.getElementById('country');
-        
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
         defaultOption.textContent = 'Select country';
@@ -295,7 +338,7 @@
             option.textContent = country;
             countrySelect.appendChild(option);
         });
-        
+
         function updateFromCountry() {
             const country = countrySelect.value;
             if (countryData[country]) {
@@ -304,7 +347,7 @@
                 document.getElementById('length').value = length;
             }
         }
-        
+
         function updateFromPrefix() {
             const prefix = document.getElementById('digit').value;
             for (const [country, data] of Object.entries(countryData)) {
@@ -315,7 +358,9 @@
                 }
             }
         }
-
+        function goHome() {
+        window.location.href = "index.html"; // Change this to the correct homepage filename
+    }
         function generateANI() {
             let aniType = document.getElementById("aniType").value;
             let generationType = document.getElementById("generationType").value;
@@ -328,7 +373,7 @@
                 document.getElementById("output").innerHTML = "Please enter valid inputs.";
                 return;
             }
-            
+
             let flength = length - 1;
             let outputHtml = '';
 
@@ -345,7 +390,23 @@
                         <button class="copy-btn" onclick="copyText('${ani}')">📋</button>
                     </div>`;
                 }
-            } 
+            } else if (aniType === "long") {
+                let longANI = '';
+                for (let i = 0; i < 10; i++) {
+                    let ani = `${i}*:${prefix}${(9 - i)}`;
+                    if (generationType === "random") {
+                        ani += '?'.repeat(flength);
+                    } else {
+                        ani += generateRandomNumbers(flength);
+                    }
+                    longANI += `${ani}, `;
+                }
+                longANI = longANI.slice(0, -2);
+                outputHtml += `<div class="output-container">
+                    <p>${longANI}</p>
+                    <button class="copy-btn" onclick="copyText('${longANI}')">📋</button>
+                </div>`;
+            }
             document.getElementById("output").innerHTML = outputHtml;
         }
 
