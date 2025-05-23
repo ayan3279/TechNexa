@@ -3,8 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Number Matching System</title>
+  <title>Number Matcher</title>
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     .snowflake {
       position: absolute;
       top: -10px;
@@ -13,6 +23,7 @@
       opacity: 0.8;
       animation: fall linear infinite;
     }
+
     @keyframes fall {
       to {
         transform: translateY(100vh);
@@ -34,7 +45,6 @@
       padding: 30px;
       width: 100%;
       max-width: 600px;
-      margin-bottom: 30px;
     }
 
     h2 {
@@ -53,13 +63,18 @@
       resize: vertical;
     }
 
-    label,
-    select,
-    button {
-      width: 100%;
+    .form-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
       margin-top: 10px;
-      font-size: 14px;
+    }
+
+    select, button {
+      width: 100%;
       padding: 8px;
+      font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
@@ -76,7 +91,7 @@
       background-color: #45a049;
     }
 
-    #matchOutput {
+    #output {
       margin-top: 20px;
       font-weight: bold;
       word-wrap: break-word;
@@ -84,67 +99,52 @@
       background-color: #f1f1f1;
       border-radius: 4px;
       width: 100%;
-      max-width: 100%;
+    }
+
+    #copyBtn {
+      margin-top: 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 4px;
+    }
+
+    #copyBtn:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <input type="checkbox" id="toggle" class="toggle--checkbox" />
-  <label for="toggle" class="toggle--label">
-    <span class="toggle--label-background"></span>
-  </label>
-  <div class="background"></div>
-
   <header>
-    <img
-      src="technexa_logo.png"
-      alt="Tech Nexa Logo"
-      class="logo"
-      onclick="goHome()"
-      style="cursor: pointer"
-    />
+    <img src="technexa_logo.png" alt="Tech Nexa Logo" class="logo" onclick="goHome()" style="cursor: pointer;">
   </header>
 
-  <!-- Number Matching System -->
   <div class="container">
     <h2>Number Matching System</h2>
-    <textarea
-      id="numberMatchInput"
-      placeholder="Paste numbers (one per line)..."
-    ></textarea>
+    <textarea id="numberInput" placeholder="Paste your numbers here..."></textarea>
+    
+    <div class="form-group">
+      <label for="matchType">Match Direction:</label>
+      <select id="matchType">
+        <option value="vertical">Vertical</option>
+        <option value="horizontal">Horizontal</option>
+      </select>
+    </div>
 
-    <label for="matchThreshold">Minimum Matching Digits:</label>
-    <select id="matchThreshold">
-      <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-            <option value="12">12</option>
-            <option value="13">13</option>
-            <option value="14">14</option>
-    </select>
+    <button onclick="matchNumbers()">Match Numbers</button>
 
-    <label for="matchMode">Match Direction:</label>
-    <select id="matchMode">
-      <option value="horizontal">Horizontal</option>
-      <option value="vertical">Vertical</option>
-    </select>
-
-    <button onclick="matchSimilarNumbers()">Match Similar Numbers</button>
-    <div id="matchOutput"></div>
+    <div id="output"></div>
+    <button id="copyBtn" onclick="copyToClipboard()">Copy</button>
   </div>
 
   <script>
-    // Snowflake animation
-    document.addEventListener("DOMContentLoaded", function () {
+    // Create falling snowflakes
+    document.addEventListener('DOMContentLoaded', function () {
       for (let i = 0; i < 100; i++) {
-        let snowflake = document.createElement("div");
-        snowflake.className = "snowflake";
+        let snowflake = document.createElement('div');
+        snowflake.className = 'snowflake';
         snowflake.style.width = `${Math.random() * 5 + 2}px`;
         snowflake.style.height = snowflake.style.width;
         snowflake.style.left = `${Math.random() * 100}vw`;
@@ -155,76 +155,55 @@
     });
 
     function goHome() {
-      window.location.href = "index.html"; // Adjust as needed
+      window.location.href = "index.html";
     }
 
-    function countPositionalMatches(a, b) {
-      let count = 0;
-      for (let i = 0; i < Math.min(a.length, b.length); i++) {
-        if (a[i] === b[i]) count++;
-      }
-      return count;
-    }
+    function matchNumbers() {
+      const input = document.getElementById("numberInput").value.trim();
+      const matchType = document.getElementById("matchType").value;
+      const lines = input.split("\n").map(line => line.trim()).filter(line => line !== "");
+      let matches = [];
 
-    function verticalMatch(a, b) {
-      let count = 0;
-      for (let i = 0; i < Math.min(a.length, b.length); i++) {
-        if (a[i] === b[i]) count++;
-      }
-      return count;
-    }
+      if (matchType === "horizontal") {
+        const countMap = {};
+        for (let number of lines) {
+          countMap[number] = (countMap[number] || 0) + 1;
+        }
+        for (let [num, count] of Object.entries(countMap)) {
+          if (count > 1) matches.push(num + " (x" + count + ")");
+        }
+      } else if (matchType === "vertical") {
+        const maxLength = Math.max(...lines.map(num => num.length));
+        const columns = Array.from({ length: maxLength }, () => ({}));
 
-    function matchSimilarNumbers() {
-      const input = document.getElementById("numberMatchInput").value
-        .trim()
-        .split(/\n+/)
-        .map(x => x.trim());
-      const threshold = parseInt(document.getElementById("matchThreshold").value);
-      const mode = document.getElementById("matchMode").value;
-
-      const visited = new Set();
-      const groups = [];
-
-      for (let i = 0; i < input.length; i++) {
-        if (visited.has(i)) continue;
-        const group = [input[i]];
-        visited.add(i);
-        for (let j = i + 1; j < input.length; j++) {
-          if (visited.has(j)) continue;
-          let matchCount = 0;
-
-          if (mode === "horizontal") {
-            matchCount = countPositionalMatches(input[i], input[j]);
-          } else {
-            matchCount = verticalMatch(input[i], input[j]);
-          }
-
-          if (matchCount >= threshold) {
-            group.push(input[j]);
-            visited.add(j);
+        for (let num of lines) {
+          for (let i = 0; i < maxLength; i++) {
+            const digit = num[i] || "_";
+            columns[i][digit] = (columns[i][digit] || 0) + 1;
           }
         }
 
-        if (group.length > 1) {
-          groups.push(group);
-        }
+        let result = "Vertical Similarity by Column:\n";
+        columns.forEach((col, idx) => {
+          const common = Object.entries(col).filter(([k, v]) => v > 1);
+          if (common.length > 0) {
+            result += `Column ${idx + 1}: ${common.map(([k, v]) => `${k} (x${v})`).join(", ")}\n`;
+          }
+        });
+        matches.push(result.trim());
       }
 
-      const matchOutput = document.getElementById("matchOutput");
-      if (groups.length === 0) {
-        matchOutput.innerHTML =
-          "<p>No similar groups found based on the selected threshold.</p>";
-      } else {
-        matchOutput.innerHTML = groups
-          .map(
-            group => `
-          <div style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border-left: 4px solid #4CAF50;">
-            <strong>Group:</strong><br>${group.join("<br>")}
-          </div>
-        `
-          )
-          .join("");
-      }
+      document.getElementById("output").innerText = matches.length ? matches.join("\n") : "No matches found.";
+      document.getElementById("copyBtn").style.display = matches.length ? "inline-block" : "none";
+    }
+
+    function copyToClipboard() {
+      let outputText = document.getElementById("output").innerText;
+      navigator.clipboard.writeText(outputText).then(() => {
+        alert("Copied to clipboard!");
+      }).catch(err => {
+        alert("Failed to copy: " + err);
+      });
     }
   </script>
 </body>
