@@ -98,13 +98,15 @@
         <img src="technexa_logo.png" alt="Tech Nexa Logo" class="logo" onclick="goHome()" style="cursor: pointer;">
     </header>
 
-    <!-- Number Matching System -->
-    <div class="container">
-        <h2>Number Matching System</h2>
-        <textarea id="numberMatchInput" placeholder="Paste numbers (one per line)..."></textarea>
-        <label for="matchThreshold">Minimum Matching Digits:</label>
-        <select id="matchThreshold">
-             <option value="3">3</option>
+  <!-- Number Matching System -->
+<div class="container">
+    <h2>Number Matching System</h2>
+    <textarea id="numberMatchInput" placeholder="Paste numbers (one per line)..."></textarea>
+
+    <div class="form-row" style="display: flex; align-items: center; justify-content: space-between; width: 90%; margin-top: 10px;">
+        <label for="matchThreshold" style="flex: 1;">Minimum Matching Digits:</label>
+        <select id="matchThreshold" style="flex: 2; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;">
+            <option value="3">3</option>
             <option value="4">4</option>
             <option value="5">5</option>
             <option value="6">6</option>
@@ -117,9 +119,12 @@
             <option value="13">13</option>
             <option value="14">14</option>
         </select>
-        <button onclick="matchSimilarNumbers()">Match Similar Numbers</button>
-        <div id="matchOutput"></div>
     </div>
+
+    <button onclick="matchSimilarNumbers()">Match Similar Numbers</button>
+    <div id="matchOutput"></div>
+</div>
+
 
     <script>
         // Snowflake animation
