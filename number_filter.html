@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Matching System</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        .logo {
+           width: 300px; 
+           height: auto;
+           margin-top: 10px;
+           margin-bottom: 10px;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        textarea {
+            width: 90%;
+            height: 150px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        label, select, button {
+            width: 100%;
+            margin-top: 10px;
+            font-size: 14px; 
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #matchOutput {
+            margin-top: 20px;
+            font-weight: bold;
+            word-wrap: break-word;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <input type="checkbox" id="toggle" class="toggle--checkbox">
+    <label for="toggle" class="toggle--label">
+        <span class="toggle--label-background"></span>
+    </label>
+    <div class="background"></div>
+
+    <header>
+        <img src="technexa_logo.png" alt="Tech Nexa Logo" class="logo" onclick="goHome()" style="cursor: pointer;">
+    </header>
+
+    <!-- Number Matching System -->
+    <div class="container">
+        <h2>Number Matching System</h2>
+        <textarea id="numberMatchInput" placeholder="Paste numbers (one per line)..."></textarea>
+        <label for="matchThreshold">Minimum Matching Digits:</label>
+        <select id="matchThreshold">
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+        </select>
+        <button onclick="matchSimilarNumbers()">Match Similar Numbers</button>
+        <div id="matchOutput"></div>
+    </div>
+
+    <script>
+        // Snowflake animation
+        document.addEventListener('DOMContentLoaded', function () {
+            for (let i = 0; i < 100; i++) {
+                let snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.style.width = `${Math.random() * 5 + 2}px`;
+                snowflake.style.height = snowflake.style.width;
+                snowflake.style.left = `${Math.random() * 100}vw`;
+                snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+                document.body.appendChild(snowflake);
+            }
+        });
+
+        function goHome() {
+            window.location.href = "index.html"; // Adjust to actual home page if needed
+        }
+
+        function matchSimilarNumbers() {
+            const input = document.getElementById("numberMatchInput").value.trim().split(/\n+/);
+            const threshold = parseInt(document.getElementById("matchThreshold").value);
+
+            const countPositionalMatches = (a, b) => {
+                let count = 0;
+                for (let i = 0; i < Math.min(a.length, b.length); i++) {
+                    if (a[i] === b[i]) count++;
+                }
+                return count;
+            };
+
+            const groups = [];
+            const visited = new Set();
+
+            for (let i = 0; i < input.length; i++) {
+                if (visited.has(i)) continue;
+                const group = [input[i]];
+                visited.add(i);
+                for (let j = i + 1; j < input.length; j++) {
+                    if (!visited.has(j) && countPositionalMatches(input[i], input[j]) >= threshold) {
+                        group.push(input[j]);
+                        visited.add(j);
+                    }
+                }
+                if (group.length > 1) {
+                    groups.push(group);
+                }
+            }
+
+            const matchOutput = document.getElementById("matchOutput");
+            if (groups.length === 0) {
+                matchOutput.innerHTML = "<p>No similar groups found based on the selected threshold.</p>";
+            } else {
+                matchOutput.innerHTML = groups.map(group => `
+                    <div style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border-left: 4px solid #4CAF50;">
+                        <strong>Group:</strong><br>${group.join("<br>")}
+                    </div>
+                `).join("");
+            }
+        }
+    </script>
+</body>
+</html>
