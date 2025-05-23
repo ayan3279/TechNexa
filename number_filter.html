@@ -1,223 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Number Matcher</title>
-    <style>
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.8;
-            animation: fall linear infinite;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Number Matcher</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        @keyframes fall {
-            to {
-                transform: translateY(100vh);
-                opacity: 0;
-            }
-        }
+    .snowflake {
+      position: absolute;
+      top: -10px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: fall linear infinite;
+    }
 
-        .logo {
-            width: 300px;
-            height: auto;
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
 
-        .container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            width: 100%;
-            max-width: 600px;
-        }
+    .logo {
+      width: 300px;
+      height: auto;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
+    .container {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 600px;
+    }
 
-        textarea {
-            width: 90%;
-            height: 150px;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            resize: vertical;
-        }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
 
-        .form-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
+    textarea {
+      width: 90%;
+      height: 150px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
+    }
 
-        .flex-column {
-            flex-direction: column;
-            align-items: stretch;
-        }
+    .form-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
 
-        select, button, input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            margin-top: 10px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
+    select, button {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
 
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-top: 20px;
-        }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
 
-        button:hover {
-            background-color: #45a049;
-        }
+    button:hover {
+      background-color: #45a049;
+    }
 
-        #output {
-            margin-top: 20px;
-            font-weight: bold;
-            word-wrap: break-word;
-            padding: 10px;
-            background-color: #f1f1f1;
-            border-radius: 4px;
-            width: 100%;
-            max-width: 100%;
-        }
+    #output {
+      margin-top: 20px;
+      font-weight: bold;
+      word-wrap: break-word;
+      padding: 10px;
+      background-color: #f1f1f1;
+      border-radius: 4px;
+      width: 100%;
+    }
 
-        #copyBtn {
-            margin-top: 10px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 4px;
-            display: none;
-        }
+    #copyBtn {
+      margin-top: 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 4px;
+    }
 
-        #copyBtn:hover {
-            background-color: #0056b3;
-        }
-
-        .form-group label {
-            margin-top: 10PX;
-            margin-right: 0px;
-        }
-    </style>
+    #copyBtn:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-    <input type="checkbox" id="toggle" class="toggle--checkbox">
-    <label for="toggle" class="toggle--label">
-        <span class="toggle--label-background"></span>
-    </label>
-    <div class="background"></div>
-    <header>
-        <img src="technexa_logo.png" alt="Tech Nexa Logo" class="logo" onclick="goHome()" style="cursor: pointer;">
-    </header>
-    <div class="container">
-        <h2>Number Matching System</h2>
-        <textarea id="inputText" placeholder="Paste your numbers here..."></textarea>
-        <div class="form-group">
-            <label for="matchType">Match Type:</label>
-            <select id="matchType">
-                <option value="duplicate">Matching Numbers</option>
-                <option value="position">Position Based</option>
-            </select>
-            <label for="direction">Direction:</label>
-            <select id="direction" onchange="toggleDigitCount()">
-                <option value="vertical">Vertical</option>
-                <option value="horizontal">Horizontal</option>
-            </select>
-        </div>
-        <div class="form-group" id="digitCountGroup">
-            <label for="digitCount">Digits to Match:</label>
-            <input type="number" id="digitCount" min="1" value="1">
-        </div>
-        <button onclick="matchNumbers()">Match</button>
-        <div id="output"></div>
-        <button id="copyBtn" onclick="copyToClipboard()">Copy</button>
+  <header>
+    <img src="technexa_logo.png" alt="Tech Nexa Logo" class="logo" onclick="goHome()" style="cursor: pointer;">
+  </header>
+
+  <div class="container">
+    <h2>Number Matching System</h2>
+    <textarea id="numberInput" placeholder="Paste your numbers here..."></textarea>
+    
+    <div class="form-group">
+      <label for="matchType">Match Direction:</label>
+      <select id="matchType">
+        <option value="vertical">Vertical</option>
+        <option value="horizontal">Horizontal</option>
+      </select>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            for (let i = 0; i < 100; i++) {
-                let snowflake = document.createElement('div');
-                snowflake.className = 'snowflake';
-                snowflake.style.width = `${Math.random() * 5 + 2}px`;
-                snowflake.style.height = snowflake.style.width;
-                snowflake.style.left = `${Math.random() * 100}vw`;
-                snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`;
-                snowflake.style.animationDelay = `${Math.random() * 5}s`;
-                document.body.appendChild(snowflake);
-            }
+    <button onclick="matchNumbers()">Match Numbers</button>
+
+    <div id="output"></div>
+    <button id="copyBtn" onclick="copyToClipboard()">Copy</button>
+  </div>
+
+  <script>
+    // Create falling snowflakes
+    document.addEventListener('DOMContentLoaded', function () {
+      for (let i = 0; i < 100; i++) {
+        let snowflake = document.createElement('div');
+        snowflake.className = 'snowflake';
+        snowflake.style.width = `${Math.random() * 5 + 2}px`;
+        snowflake.style.height = snowflake.style.width;
+        snowflake.style.left = `${Math.random() * 100}vw`;
+        snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`;
+        snowflake.style.animationDelay = `${Math.random() * 5}s`;
+        document.body.appendChild(snowflake);
+      }
+    });
+
+    function goHome() {
+      window.location.href = "index.html";
+    }
+
+    function matchNumbers() {
+      const input = document.getElementById("numberInput").value.trim();
+      const matchType = document.getElementById("matchType").value;
+      const lines = input.split("\n").map(line => line.trim()).filter(line => line !== "");
+      let matches = [];
+
+      if (matchType === "horizontal") {
+        const countMap = {};
+        for (let number of lines) {
+          countMap[number] = (countMap[number] || 0) + 1;
+        }
+        for (let [num, count] of Object.entries(countMap)) {
+          if (count > 1) matches.push(num + " (x" + count + ")");
+        }
+      } else if (matchType === "vertical") {
+        const maxLength = Math.max(...lines.map(num => num.length));
+        const columns = Array.from({ length: maxLength }, () => ({}));
+
+        for (let num of lines) {
+          for (let i = 0; i < maxLength; i++) {
+            const digit = num[i] || "_";
+            columns[i][digit] = (columns[i][digit] || 0) + 1;
+          }
+        }
+
+        let result = "Vertical Similarity by Column:\n";
+        columns.forEach((col, idx) => {
+          const common = Object.entries(col).filter(([k, v]) => v > 1);
+          if (common.length > 0) {
+            result += `Column ${idx + 1}: ${common.map(([k, v]) => `${k} (x${v})`).join(", ")}\n`;
+          }
         });
+        matches.push(result.trim());
+      }
 
-        function goHome() {
-            window.location.href = "index.html";
-        }
+      document.getElementById("output").innerText = matches.length ? matches.join("\n") : "No matches found.";
+      document.getElementById("copyBtn").style.display = matches.length ? "inline-block" : "none";
+    }
 
-        function toggleDigitCount() {
-            const direction = document.getElementById("direction").value;
-            document.getElementById("digitCountGroup").style.display = direction === "vertical" ? "flex" : "none";
-        }
-
-        function matchNumbers() {
-            const text = document.getElementById("inputText").value.trim();
-            const matchType = document.getElementById("matchType").value;
-            const direction = document.getElementById("direction").value;
-            const digitCount = parseInt(document.getElementById("digitCount").value);
-            const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
-            let result = "";
-
-            if (matchType === "duplicate") {
-                const countMap = {};
-                for (let number of lines) {
-                    countMap[number] = (countMap[number] || 0) + 1;
-                }
-                const matches = Object.entries(countMap).filter(([_, c]) => c > 1);
-                result = matches.length ? matches.map(([n, c]) => `${n} (x${c})`).join("\n") : "No matches found.";
-            } else if (matchType === "position" && direction === "vertical") {
-                const digitMap = {};
-                for (let number of lines) {
-                    for (let i = 0; i <= number.length - digitCount; i++) {
-                        const sub = number.substr(i, digitCount);
-                        digitMap[sub] = (digitMap[sub] || 0) + 1;
-                    }
-                }
-                const matches = Object.entries(digitMap).filter(([_, c]) => c > 1);
-                result = matches.length ? matches.map(([d, c]) => `${d} (x${c})`).join("\n") : "No vertical matches found.";
-            } else if (matchType === "position" && direction === "horizontal") {
-                result = "Horizontal Position Match not applicable. Use 'Matching Numbers'.";
-            }
-
-            document.getElementById("output").innerText = result.trim();
-            document.getElementById("copyBtn").style.display = result ? "inline-block" : "none";
-        }
-
-        function copyToClipboard() {
-            const outputText = document.getElementById("output").innerText;
-            navigator.clipboard.writeText(outputText).then(() => {
-                alert("Copied to clipboard!");
-            }).catch(err => {
-                alert("Failed to copy: " + err);
-            });
-        }
-
-        toggleDigitCount();
-    </script>
+    function copyToClipboard() {
+      let outputText = document.getElementById("output").innerText;
+      navigator.clipboard.writeText(outputText).then(() => {
+        alert("Copied to clipboard!");
+      }).catch(err => {
+        alert("Failed to copy: " + err);
+      });
+    }
+  </script>
 </body>
 </html>
