@@ -3,38 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Extractor & Number Matcher</title>
     <link rel="stylesheet" href="style.css"> 
-    <title>Data Extractor</title>
     <style>
-
-.snowflake {
-    position: absolute;
-    top: -10px;
-    background: white;
-    border-radius: 50%;
-    opacity: 0.8;
-    animation: fall linear infinite;
-}
-@keyframes fall {
-    to {
-        transform: translateY(100vh);
-        opacity: 0;
-    }
-}
-
-
-        /* Body styles */
-       
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
 
         .logo {
            width: 300px; 
            height: auto;
            margin-top: 10px;
            margin-bottom: 10px;
-              }
-
-
-        
+        }
 
         .container {
             background-color: white;
@@ -43,6 +35,7 @@
             padding: 30px;
             width: 100%;
             max-width: 600px;
+            margin-bottom: 30px;
         }
 
         h2 {
@@ -66,10 +59,8 @@
             justify-content: space-between;
             align-items: center;
             gap: 10px;
-          
         }
 
-        
         select, button {
             width: 100%;
             padding: 8px; 
@@ -110,34 +101,30 @@
             cursor: pointer;
             padding: 5px 10px;
             border-radius: 4px;
+            display: none;
         }
 
         #copyBtn:hover {
             background-color: #0056b3;
         }
 
-       
-
         .form-group label {
             margin-top: 10PX;
-        
             margin-right: 0px;
-        }
-
-        #copyBtn {
-            display: none;
         }
     </style>
 </head>
 <body>
     <input type="checkbox" id="toggle" class="toggle--checkbox">
     <label for="toggle" class="toggle--label">
-      <span class="toggle--label-background"></span>
+        <span class="toggle--label-background"></span>
     </label>
     <div class="background"></div>
     <header>
         <img src="technexa_logo.png" alt="Tech Nexa Logo" class="logo" onclick="goHome()" style="cursor: pointer;">
     </header>
+
+    <!-- Data Extractor -->
     <div class="container">
         <h2>Data Extractor</h2>
         <textarea id="inputText" placeholder="Paste your text here..."></textarea>
@@ -159,7 +146,24 @@
         <button id="copyBtn" onclick="copyToClipboard()">Copy</button>
     </div>
 
+    <!-- Number Matching System -->
+    <div class="container">
+        <h2>Number Matching System</h2>
+        <textarea id="numberMatchInput" placeholder="Paste numbers (one per line)..."></textarea>
+        <label for="matchThreshold">Minimum Matching Digits:</label>
+        <select id="matchThreshold">
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+        </select>
+        <button onclick="matchSimilarNumbers()">Match Similar Numbers</button>
+        <div id="matchOutput"></div>
+    </div>
+
     <script>
+        // Snowflake animation
         document.addEventListener('DOMContentLoaded', function () {
             for (let i = 0; i < 100; i++) {
                 let snowflake = document.createElement('div');
@@ -178,6 +182,10 @@
             document.querySelector('.theme-toggle').classList.toggle('light');
         }
 
+        function goHome() {
+            window.location.href = "index.html"; // Adjust as needed
+        }
+
         function extractData() {
             let text = document.getElementById("inputText").value;
             let extractType = document.getElementById("extractType").value;
@@ -185,12 +193,11 @@
             let pattern;
 
             if (extractType === "mobile") {
-                pattern = /\b\d{8,}\b/g; 
+                pattern = /\b\d{8,}\b/g;
             } else if (extractType === "datetime") {
-                pattern = /\b\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\b/g; 
+                pattern = /\b\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\b/g;
             } else if (extractType === "sid") {
-           
-                pattern = /\b(Telegram|FACEBOOK|WhatsApp|TikTok|CTW|Skype|InfoSMS|MUA-786123)\b/g; // Match SID values
+                pattern = /\b(Telegram|FACEBOOK|WhatsApp|TikTok|CTW|Skype|InfoSMS|MUA-786123)\b/g;
             }
 
             let matches = text.match(pattern) || [];
@@ -200,12 +207,8 @@
 
             let outputText = matches.join("||") || "No matches found";
             document.getElementById("output").innerText = outputText;
-            document.getElementById("copyBtn").style.display = matches.length > 0 ? "inline-block" : "none"; // Show copy button only if there are matches
+            document.getElementById("copyBtn").style.display = matches.length > 0 ? "inline-block" : "none";
         }
-
-        function goHome() {
-        window.location.href = "index.html"; // Change this to the correct homepage filename
-    }
 
         function copyToClipboard() {
             let outputText = document.getElementById("output").innerText;
@@ -214,6 +217,48 @@
             }).catch(err => {
                 alert("Failed to copy: " + err);
             });
+        }
+
+        function matchSimilarNumbers() {
+            const input = document.getElementById("numberMatchInput").value.trim().split(/\n+/);
+            const threshold = parseInt(document.getElementById("matchThreshold").value);
+
+            const countPositionalMatches = (a, b) => {
+                let count = 0;
+                for (let i = 0; i < Math.min(a.length, b.length); i++) {
+                    if (a[i] === b[i]) count++;
+                }
+                return count;
+            };
+
+            const groups = [];
+            const visited = new Set();
+
+            for (let i = 0; i < input.length; i++) {
+                if (visited.has(i)) continue;
+                const group = [input[i]];
+                visited.add(i);
+                for (let j = i + 1; j < input.length; j++) {
+                    if (!visited.has(j) && countPositionalMatches(input[i], input[j]) >= threshold) {
+                        group.push(input[j]);
+                        visited.add(j);
+                    }
+                }
+                if (group.length > 1) {
+                    groups.push(group);
+                }
+            }
+
+            const matchOutput = document.getElementById("matchOutput");
+            if (groups.length === 0) {
+                matchOutput.innerHTML = "<p>No similar groups found based on the selected threshold.</p>";
+            } else {
+                matchOutput.innerHTML = groups.map(group => `
+                    <div style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border-left: 4px solid #4CAF50;">
+                        <strong>Group:</strong><br>${group.join("<br>")}
+                    </div>
+                `).join("");
+            }
         }
     </script>
 </body>
